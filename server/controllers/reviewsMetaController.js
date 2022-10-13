@@ -1,4 +1,4 @@
-const { ReviewMeta } = require('../model/non_relational/reviewsMeta.js');
+const { ReviewMeta } = require('../model/reviewsMeta.js');
 
 const getReviewsMeta = async (req, res, next) => {
   const { product_id } = req.query;

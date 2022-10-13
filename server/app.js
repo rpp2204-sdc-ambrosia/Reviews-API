@@ -1,12 +1,12 @@
 const express = require('express');
 const path = require('path');
-const { port } = require('./config.js');
+const { port } = require('../config.js');
 const { appendFile } = require('fs');
 const error = require('./middleware/error');
 const reviewsRoutes = require('./routes/reviewsRoutes');
 const app = express();
-
-require('./databases/non_relational_db/db')();
+const db = require('./databases/db');
+db();
 
 app.use(express.json());
 
