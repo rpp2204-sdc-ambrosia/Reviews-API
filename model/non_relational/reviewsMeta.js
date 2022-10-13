@@ -10,18 +10,20 @@ const reviewsMetaSchema = new mongoose.Schema({
     5: Number,
   },
   recommended: { false: Number, true: Number },
-  characteristics: [
-    {
-      Fit: { id: Number, value: Number },
-      Length: { id: Number, value: Number },
-      Comfort: { id: Number, value: Number },
-      Quality: { id: Number, value: Number },
-    },
-  ],
+  characteristics: {
+    Comfort: { id: Number, value: Number },
+    Fit: { id: Number, value: Number },
+    Length: { id: Number, value: Number },
+    Quality: { id: Number, value: Number },
+    Size: { id: Number, value: Number },
+    Width: { id: Number, value: Number },
+  },
 });
 
-const ReviewMeta = mongoose.model('ReviewMeta', reviewsMetaSchema);
+const ReviewMeta = mongoose.model(
+  'ReviewMeta',
+  reviewsMetaSchema,
+  'reviews_meta'
+);
 
 module.exports = { ReviewMeta };
-
-console.log('ReviewMeta: ', new ReviewMeta());
