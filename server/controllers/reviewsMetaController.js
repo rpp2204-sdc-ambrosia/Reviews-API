@@ -13,7 +13,7 @@ const getReviewsMeta = async (req, res, next) => {
       { $unset: '_id' },
     ]).exec();
 
-    res.status(200).send(list);
+    res.status(200).send(list[0]);
   } catch (err) {
     next(err);
   }

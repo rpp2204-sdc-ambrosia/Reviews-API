@@ -74,11 +74,12 @@ const postReview = async (req, res, next) => {
       },
     ]);
 
-    const reviewId = await lastReview.review_id;
-    const lastReviewId = lastReview[0].review_id;
+    // const reviewId = await lastReview.review_id;
+    const lastReviewId =
+      lastReview[0] === undefined ? 0 : lastReview[0].review_id;
 
     //make new review id + 1 of the last review id
-    const review = new Review({
+    const review = await Review.create({
       product_id,
       review_id: lastReviewId + 1,
       rating,
@@ -89,9 +90,8 @@ const postReview = async (req, res, next) => {
       reviewer_email: email,
       photos,
     });
+    // console.log('review: ', review);
     await review.save();
-
-    res.sendStatus(201);
 
     // after saving review and sending response
     //find the product id for the review and update the metadata
@@ -129,6 +129,8 @@ const postReview = async (req, res, next) => {
     delete transformObj.product_id;
 
     await ReviewMeta.findOneAndUpdate({ product_id }, transformObj);
+
+    res.sendStatus(201);
   } catch (error) {
     next(error);
   }

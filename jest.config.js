@@ -8,4 +8,5 @@ module.exports = {
     },
   },
   coverageDirectory: 'coverage',
+  globalTeardown: './test-teardown-globals.js',
 };

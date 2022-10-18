@@ -1,6 +1,5 @@
 const express = require('express');
 const path = require('path');
-const { port } = require('../config.js');
 const { appendFile } = require('fs');
 const error = require('./middleware/error');
 const reviewsRoutes = require('./routes/reviewsRoutes');
@@ -18,6 +17,8 @@ app.use('/', (req, res, next) => {
 app.use(reviewsRoutes.routes);
 app.use(error);
 
-app.listen(port || 8000, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+// app.listen(port || 8000, () => {
+//   console.log(`Example app listening on port ${port}`);
+// });
+
+module.exports = app;

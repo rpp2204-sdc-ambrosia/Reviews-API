@@ -16,6 +16,16 @@ const reviewsSchema = new mongoose.Schema({
   photos: [String],
 });
 
+// const incrementReviewCount = async function (next) {
+//   console.log('this test: ', this);
+
+//   return 'hello';
+
+//   next();
+// };
+
+// reviewsSchema.pre('save', incrementReviewCount);
+
 const Review = mongoose.model('Review', reviewsSchema);
 
 module.exports = { Review };
