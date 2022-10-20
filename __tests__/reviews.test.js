@@ -173,4 +173,56 @@ describe('Reviews API', () => {
       expect(newFalseCount).toBe(oldFalseCount);
     });
   });
+
+  describe('PUT /reviews/:review_id/helpful', () => {
+    let lastReview;
+    beforeEach(async () => {
+      lastReview = await Review.findOne({ review_id: 1 });
+    });
+    afterEach(async () => {
+      delete lastReview._id;
+
+      await Review.findOneAndUpdate({ review_id: 1 }, lastReview);
+    });
+
+    it('should respond with a 204 status code', async () => {
+      const res = await request(app).put('/reviews/1/helpful');
+
+      expect(res.statusCode).toBe(204);
+    });
+
+    it('helpfulness should be incremented by one', async () => {
+      const res = await request(app).put('/reviews/1/helpful');
+
+      const currentReview = await Review.findOne({ review_id: 1 });
+
+      expect(currentReview.helpfulness).toBe(lastReview.helpfulness + 1);
+    });
+  });
+
+  describe('PUT /reviews/:review_id/report', () => {
+    let lastReview;
+    beforeEach(async () => {
+      lastReview = await Review.findOne({ review_id: 1 });
+    });
+    afterEach(async () => {
+      delete lastReview._id;
+
+      await Review.findOneAndUpdate({ review_id: 1 }, lastReview);
+    });
+
+    it('should respond with a 204 status code', async () => {
+      const res = await request(app).put('/reviews/1/report');
+
+      expect(res.statusCode).toBe(204);
+    });
+
+    it('should change reported property to true', async () => {
+      const res = await request(app).put('/reviews/1/report');
+
+      const currentReview = await Review.findOne({ review_id: 1 });
+
+      expect(currentReview.reported).toBe(true);
+    });
+  });
 });
