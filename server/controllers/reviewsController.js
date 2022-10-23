@@ -6,7 +6,7 @@ const getReviews = async (req, res, next) => {
 
   const productId = Number(product_id);
   const pageNumber = Number(page);
-  const pageSize = Number(count);
+  const pageSize = Number(count) === 0 ? 5 : Number(count);
 
   const response = { product_id, page: pageNumber, count: pageSize };
 
