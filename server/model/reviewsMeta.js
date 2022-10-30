@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const reviewsMetaSchema = new mongoose.Schema({
-  product_id: Number,
+  product_id: { type: Number, index: { unique: true } },
   ratings: {
     1: Number,
     2: Number,

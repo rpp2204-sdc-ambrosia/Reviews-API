@@ -4,6 +4,7 @@
   "description": "SDC Reviews API",
   "main": "index.js",
   "scripts": {
+    "start": "node ./server/appListen.js",
     "server-dev": "nodemon ./server/appListen.js",
     "test": "jest --detectOpenHandles",
     "test:watch": "npm run test -- --watch"

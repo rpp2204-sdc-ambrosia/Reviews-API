@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const reviewsSchema = new mongoose.Schema({
-  review_id: { type: Number, unique: true },
-  product_id: Number,
+  review_id: { type: Number, index: { unique: true } },
+  product_id: { type: Number, index: true },
   rating: Number,
   summary: { type: String, required: true },
   recommend: Boolean,
@@ -13,18 +13,8 @@ const reviewsSchema = new mongoose.Schema({
   reviewer_email: { type: String, required: true },
   helpfulness: { type: Number, default: 0 },
   reported: { type: Boolean, default: false },
-  photos: [String],
+  photos: [{ url: String }],
 });
-
-// const incrementReviewCount = async function (next) {
-//   console.log('this test: ', this);
-
-//   return 'hello';
-
-//   next();
-// };
-
-// reviewsSchema.pre('save', incrementReviewCount);
 
 const Review = mongoose.model('Review', reviewsSchema);
 

@@ -19,10 +19,4 @@ const getReviewsMeta = async (req, res, next) => {
   }
 };
 
-// const postReview = async (req, res, next) => {
-//   const list = await Review.save();
-
-//   res.status(200).send(list);
-// };
-
 module.exports = { getReviewsMeta };

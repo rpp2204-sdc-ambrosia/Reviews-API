@@ -1,11 +1,9 @@
-const { db_name } = require('../../config');
+const { MONGODB_URI } = require('../../config');
 const mongoose = require('mongoose');
-
-console.log('db name: ', db_name);
 
 module.exports = () => {
   mongoose
-    .connect(`mongodb://localhost:27017/${db_name}`)
-    .then(() => console.log('connection success'))
+    .connect(MONGODB_URI || `mongodb://localhost:27017/ReviewsDB`)
+    .then(() => console.log('db connection success'))
     .catch((error) => console.log('error connecting to db: ', error));
 };
