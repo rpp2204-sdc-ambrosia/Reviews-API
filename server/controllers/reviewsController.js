@@ -6,39 +6,17 @@ const getReviews = async (req, res, next) => {
 
   const productId = Number(product_id);
   const pageNumber = Number(page);
-  const pageSize = Number(count);
+  const pageSize = Number(count) === 0 ? 5 : Number(count);
 
   const response = { product_id, page: pageNumber, count: pageSize };
 
   try {
-    const list = await Review.aggregate([
-      {
-        $match: { product_id: productId },
-      },
-      {
-        $match: { reported: false },
-      },
-      {
-        $skip: pageSize * pageNumber,
-      },
-      {
-        $limit: pageSize,
-      },
-      {
-        $project: {
-          review_id: '$review_id',
-          rating: '$rating',
-          summary: '$summary',
-          recommend: '$recommend',
-          response: '$response',
-          body: '$body',
-          date: '$date',
-          reviewer_name: '$reviewer_name',
-          helpfulness: '$helpfulness',
-          photos: '$photos',
-        },
-      },
-    ]).exec();
+    const list = await Review.find({ product_id: productId })
+      .where({ reported: false })
+      .skip(pageSize * pageNumber)
+      .limit(pageSize)
+      .select({ _id: 0, reported: 0, reviewer_email: 0, product_id: 0 })
+      .lean();
 
     response.results = list;
 
@@ -62,21 +40,24 @@ const postReview = async (req, res, next) => {
   } = req.body;
 
   try {
-    //find the last review id
-    const lastReview = await Review.aggregate([
-      {
-        $sort: {
-          review_id: -1,
-        },
-      },
-      {
-        $limit: 1,
-      },
-    ]);
+    const lastReview = await Review.find({})
+      .sort({ review_id: -1 })
+      .limit(1)
+      .lean();
 
-    // const reviewId = await lastReview.review_id;
+    //find last review id in collection
+    //if it doesn't exist, 0 will be our starting point
     const lastReviewId =
       lastReview[0] === undefined ? 0 : lastReview[0].review_id;
+
+    //convert photos to array of objects with photos url
+    //if photos undefined or empty array return empty array
+    const newPhotos =
+      photos === undefined || photos.length === 0
+        ? []
+        : photos.map((item) => {
+            return { url: item };
+          });
 
     //make new review id + 1 of the last review id
     const review = await Review.create({
@@ -88,20 +69,11 @@ const postReview = async (req, res, next) => {
       recommend,
       reviewer_name: name,
       reviewer_email: email,
-      photos,
+      photos: newPhotos,
     });
-    // console.log('review: ', review);
-    await review.save();
 
-    // after saving review and sending response
     //find the product id for the review and update the metadata
-    const promise = await ReviewMeta.aggregate([
-      {
-        $match: {
-          product_id: product_id,
-        },
-      },
-    ]);
+    const promise = await ReviewMeta.find({ product_id }).lean();
 
     const transformObj = Object.entries(characteristics).reduce((a, item) => {
       let id = Number(item[0]);
@@ -128,7 +100,11 @@ const postReview = async (req, res, next) => {
     delete transformObj._id;
     delete transformObj.product_id;
 
-    await ReviewMeta.findOneAndUpdate({ product_id }, transformObj);
+    //optimization: save new review and update meta in parallel
+    const [newReview, updateMeta] = await Promise.all([
+      review.save(),
+      ReviewMeta.findOneAndUpdate({ product_id }, transformObj),
+    ]);
 
     res.sendStatus(201);
   } catch (error) {

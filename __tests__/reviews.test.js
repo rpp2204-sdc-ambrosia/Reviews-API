@@ -47,6 +47,27 @@ describe('Reviews API', () => {
 
       expect(res.body.results.length).toEqual(2);
     });
+
+    it('document format should be as expected by frontend', async () => {
+      const res = await request(app)
+        .get('/reviews')
+        .query({ product_id: 5, page: 0, count: 2 });
+
+      const doc = res.body.results[0];
+      const docLength = Object.keys(doc).length;
+
+      expect(doc.review_id).not.toBeUndefined();
+      expect(doc.rating).not.toBeUndefined();
+      expect(doc.summary).not.toBeUndefined();
+      expect(doc.recommend).not.toBeUndefined();
+      expect(doc.response).not.toBeUndefined();
+      expect(doc.body).not.toBeUndefined();
+      expect(doc.date).not.toBeUndefined();
+      expect(doc.reviewer_name).not.toBeUndefined();
+      expect(doc.helpfulness).not.toBeUndefined();
+      expect(doc.photos).not.toBeUndefined();
+      expect(docLength).toBe(10);
+    });
   });
 
   describe('GET /reviews/meta', () => {
@@ -171,6 +192,88 @@ describe('Reviews API', () => {
       expect(newFiveRating).toBe(oldFiveRating + 1);
       expect(newTrueCount).toBe(oldTrueCount + 1);
       expect(newFalseCount).toBe(oldFalseCount);
+    });
+
+    it('photos should be saved as array of objects with url property on each object', async () => {
+      const res = await request(app)
+        .post('/reviews')
+        .send({
+          product_id: 5,
+          rating: 5,
+          summary: 'test test test test',
+          body: 'I love pizza test',
+          recommend: true,
+          name: 'dvsvsvfv',
+          email: 'test@gmail.com',
+          photos: ['photo1', 'photo2', 'photo3'],
+          characteristics: {
+            16: 1,
+            17: 1,
+            14: 1,
+            15: 1,
+          },
+        });
+
+      const lastPost = await Review.find({ product_id: 5 })
+        .sort({ review_id: -1 })
+        .limit(1);
+
+      const photo = lastPost[0].photos[0];
+
+      expect(typeof photo).toBe('object');
+      expect(photo.url).toBe('photo1');
+    });
+  });
+
+  describe('PUT /reviews/:review_id/helpful', () => {
+    let lastReview;
+    beforeEach(async () => {
+      lastReview = await Review.findOne({ review_id: 1 });
+    });
+    afterEach(async () => {
+      delete lastReview._id;
+
+      await Review.findOneAndUpdate({ review_id: 1 }, lastReview);
+    });
+
+    it('should respond with a 204 status code', async () => {
+      const res = await request(app).put('/reviews/1/helpful');
+
+      expect(res.statusCode).toBe(204);
+    });
+
+    it('helpfulness should be incremented by one', async () => {
+      const res = await request(app).put('/reviews/1/helpful');
+
+      const currentReview = await Review.findOne({ review_id: 1 });
+
+      expect(currentReview.helpfulness).toBe(lastReview.helpfulness + 1);
+    });
+  });
+
+  describe('PUT /reviews/:review_id/report', () => {
+    let lastReview;
+    beforeEach(async () => {
+      lastReview = await Review.findOne({ review_id: 1 });
+    });
+    afterEach(async () => {
+      delete lastReview._id;
+
+      await Review.findOneAndUpdate({ review_id: 1 }, lastReview);
+    });
+
+    it('should respond with a 204 status code', async () => {
+      const res = await request(app).put('/reviews/1/report');
+
+      expect(res.statusCode).toBe(204);
+    });
+
+    it('should change reported property to true', async () => {
+      const res = await request(app).put('/reviews/1/report');
+
+      const currentReview = await Review.findOne({ review_id: 1 });
+
+      expect(currentReview.reported).toBe(true);
     });
   });
 });
