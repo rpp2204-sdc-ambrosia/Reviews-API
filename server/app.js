@@ -8,6 +8,7 @@ const db = require('./databases/db');
 db();
 
 app.use(express.json());
+app.use(express.static('public'));
 
 app.use('/', (req, res, next) => {
   console.log(`${req.method} REQUEST ON ${req.url}`);
