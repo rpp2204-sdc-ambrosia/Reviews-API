@@ -1,0 +1,12 @@
+node_modules
+npm-debug.log
+AWS
+coverage
+dump/ReviewsDB
+ETL
+Performance
+.env
+RICKY_SDC.pem
+summary.html
+warmMetaCache.js
+warmReviewsCache.js

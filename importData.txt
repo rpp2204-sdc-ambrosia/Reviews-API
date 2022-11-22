@@ -1,0 +1,4 @@
+SET product_id ValueN
+
+cat reviews.csv | awk -F',' '{print $1 }' | product_ids.txt
+

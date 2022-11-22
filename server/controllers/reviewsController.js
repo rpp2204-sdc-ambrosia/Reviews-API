@@ -1,16 +1,26 @@
+// const client = require('../cache/redis_connect.js');
 const { Review } = require('../model/reviews.js');
 const { ReviewMeta } = require('../model/reviewsMeta.js');
 
 const getReviews = async (req, res, next) => {
   const { product_id, page, count } = req.query;
-
   const productId = Number(product_id);
   const pageNumber = Number(page);
   const pageSize = Number(count) === 0 ? 5 : Number(count);
 
+  // const key = `${productId}${pageNumber}${pageSize}`;
+
   const response = { product_id, page: pageNumber, count: pageSize };
 
   try {
+    // client.get(key, async (err, reviews) => {
+    //   if (err) console.log(err);
+    //   if (reviews) {
+    //     const response = JSON.parse(reviews);
+
+    //     console.log('sent from cache');
+    //     res.status(200).send(response);
+    //   } else {
     const list = await Review.find({ product_id: productId })
       .where({ reported: false })
       .skip(pageSize * pageNumber)
@@ -20,7 +30,11 @@ const getReviews = async (req, res, next) => {
 
     response.results = list;
 
+    // client.set(key, JSON.stringify(response));
+
     res.status(200).send(response);
+    //   }
+    // });
   } catch (err) {
     next(err);
   }
