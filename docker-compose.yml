@@ -42,7 +42,7 @@ services:
       - redis_data:/data
     restart: always
 
-volumes:
+# volumes:
   # redis_data:
   #   external: true
   # /data/db:
