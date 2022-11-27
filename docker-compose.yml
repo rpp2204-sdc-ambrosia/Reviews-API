@@ -30,7 +30,8 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - /data/db:/data/db
+      - /data/db
+      # - /data/db:/data/db
     restart: always
   redis:
     image: redis
@@ -42,7 +43,7 @@ services:
     restart: always
 
 volumes:
-  redis_data:
-    external: true
-  /data/db:
-    external: true
+  # redis_data:
+  #   external: true
+  # /data/db:
+  #   external: true
