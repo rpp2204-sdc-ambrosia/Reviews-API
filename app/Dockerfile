@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 node:16
+FROM node:12
 
 WORKDIR /Reviews-API
 
