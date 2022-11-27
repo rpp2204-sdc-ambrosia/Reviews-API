@@ -8,9 +8,9 @@ const { appendFile } = require('fs');
 const error = require('./middleware/error');
 const reviewsRoutes = require('./routes/reviewsRoutes');
 const app = express();
-require('./cache/redis_connect.js');
 const db = require('./databases/db');
 db();
+require('./cache/redis_connect.js');
 
 app.use(express.json());
 app.use(express.static('public'));

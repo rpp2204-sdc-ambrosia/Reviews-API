@@ -1,15 +1,13 @@
 FROM --platform=linux/amd64 node:16
 
-RUN npm install -g nodemon
-
 WORKDIR /Reviews-API
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm install --omit=dev
 
 COPY . .
 
 EXPOSE 3000
 
-CMD ./start.sh
+CMD ["npm","run","start"]
