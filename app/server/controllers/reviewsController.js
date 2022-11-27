@@ -1,26 +1,40 @@
+const client = require('../cache/redis_connect.js');
 const { Review } = require('../model/reviews.js');
 const { ReviewMeta } = require('../model/reviewsMeta.js');
 
 const getReviews = async (req, res, next) => {
   const { product_id, page, count } = req.query;
-
   const productId = Number(product_id);
   const pageNumber = Number(page);
   const pageSize = Number(count) === 0 ? 5 : Number(count);
 
+  const key = `${productId}:${pageNumber}x${pageSize}`;
+
   const response = { product_id, page: pageNumber, count: pageSize };
 
   try {
-    const list = await Review.find({ product_id: productId })
-      .where({ reported: false })
-      .skip(pageSize * pageNumber)
-      .limit(pageSize)
-      .select({ _id: 0, reported: 0, reviewer_email: 0, product_id: 0 })
-      .lean();
+    client.GET(key, async (err, reviews) => {
+      if (err) console.log(err);
+      if (reviews) {
+        const response = JSON.parse(reviews);
 
-    response.results = list;
+        console.log('sent from cache');
+        res.status(200).send(response);
+      } else {
+        const list = await Review.find({ product_id: productId })
+          .where({ reported: false })
+          .skip(pageSize * pageNumber)
+          .limit(pageSize)
+          .select({ _id: 0, reported: 0, reviewer_email: 0, product_id: 0 })
+          .lean();
 
-    res.status(200).send(response);
+        response.results = list;
+
+        client.set(key, JSON.stringify(response));
+
+        res.status(200).send(response);
+      }
+    });
   } catch (err) {
     next(err);
   }

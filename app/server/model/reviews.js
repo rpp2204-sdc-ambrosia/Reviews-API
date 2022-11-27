@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const reviewsSchema = new mongoose.Schema({
-  review_id: { type: Number, index: { unique: true } },
+  review_id: { type: Number },
   product_id: { type: Number, index: true },
   rating: Number,
   summary: { type: String, required: true },

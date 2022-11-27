@@ -8,11 +8,11 @@ export const options = {
   scenarios: {
     constant_request_rate: {
       executor: 'constant-arrival-rate',
-      rate: 1400,
+      rate: 1,
       timeUnit: '1s',
       duration: '1m',
-      preAllocatedVUs: 100,
-      maxVUs: 5000,
+      preAllocatedVUs: 10,
+      maxVUs: 30,
     },
   },
   thresholds: {
@@ -33,15 +33,15 @@ export default function () {
         'GET',
         `${BASE_URL}reviews?product_id=${PRODUCT_ID}&page=${PAGE}&count=${COUNT}`,
       ],
-      ['GET', `${BASE_URL}reviews/meta?product_id=${PRODUCT_ID}`],
+      // ['GET', `${BASE_URL}reviews/meta?product_id=${PRODUCT_ID}`],
     ]);
 
     check(responses[0], {
       'is GET /reviews status 200': (r) => r.status === 200,
     });
-    check(responses[1], {
-      'is GET /reviews/meta status 200': (r) => r.status === 200,
-    });
+    // check(responses[1], {
+    //   'is GET /reviews/meta status 200': (r) => r.status === 200,
+    // });
   });
 }
 

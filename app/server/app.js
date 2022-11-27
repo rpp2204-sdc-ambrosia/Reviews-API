@@ -1,3 +1,7 @@
+const { NEWRELIC } = require('../config');
+
+if (NEWRELIC) require('newrelic');
+
 const express = require('express');
 const path = require('path');
 const { appendFile } = require('fs');
@@ -6,6 +10,7 @@ const reviewsRoutes = require('./routes/reviewsRoutes');
 const app = express();
 const db = require('./databases/db');
 db();
+require('./cache/redis_connect.js');
 
 app.use(express.json());
 app.use(express.static('public'));

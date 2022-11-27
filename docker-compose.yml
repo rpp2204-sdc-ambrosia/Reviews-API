@@ -1,0 +1,48 @@
+version: "3.8"
+services:
+  nodeserver:
+    container_name: reviewsAPI
+    build:
+      context: ./app
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT:"${PORT}"
+      - MONGODB_URI:"${MONGODB_URI}"
+      - REDIS_URL:"${REDIS_URL}"
+    depends_on:
+      - db
+      - redis
+    restart: always
+  nginx:
+    build:
+      context: ./nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - db
+      - redis
+      - nodeserver
+    restart: always
+  db:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - "6379:6379"
+    volumes:
+      - /data/db:/data/db
+    restart: always
+  redis:
+    image: redis
+    container_name: rdb
+    ports:
+      - "27017:27017"
+    volumes:
+      - redis_data:/data
+    restart: always
+
+volumes:
+  redis_data:
+    external: true
+  /data/db:
+    external: true
