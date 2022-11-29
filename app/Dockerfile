@@ -1,6 +1,10 @@
-FROM node:12
+FROM --platform=linux/amd64 node:16
 
-WORKDIR /Reviews-API
+ENV PORT=${PORT}
+ENV REDIS_URL=${REDIS_URL}
+ENV MONGODB_URI=${MONGODB_URI}
+
+WORKDIR /app
 
 COPY package*.json ./
 
